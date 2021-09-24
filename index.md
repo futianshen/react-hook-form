@@ -118,6 +118,13 @@ const UncontrolledInput = forwardRef<HTMLInputElement>(function (props, ref) {
 })
 ```
 
+### 最最最基本的表單需要什麼？
+- 蒐集資料
+- 提交表單
+
+如果只是這樣我們用 ref 也能做到
+
+
 ### 開始解釋 Code
 
 ### 看看背後是怎麼實作的
@@ -126,7 +133,7 @@ const UncontrolledInput = forwardRef<HTMLInputElement>(function (props, ref) {
 
 從基本的擴展
 
-- 表單提交
+
 - 自動幫忙加 @gmail.com `Controller`
 - 連動表單 B 项的值跟随 A 项变化 `Controller`
 - 敏感词禁止 `Controller`
