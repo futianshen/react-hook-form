@@ -11,7 +11,7 @@ type FormValues = {
   password: string
 }
 
-const FormControlled = () => {
+function FormControlled() {
   const { control, handleSubmit } = useForm<FormValues>({
     defaultValues: {
       username: "username",
@@ -36,12 +36,14 @@ const FormControlled = () => {
   )
 }
 
-const ControlledInput = (props: {
+function ControlledInput(props: {
   value?: string
   onChange?: ChangeEventHandler<HTMLInputElement>
-}) => <input {...props} />
+}) {
+  return <input {...props} />
+}
 
-const UseControllerInput = (props: UseControllerProps<FormValues>) => {
+function UseControllerInput(props: UseControllerProps<FormValues>) {
   const { field } = useController(props)
 
   return <input {...field} />

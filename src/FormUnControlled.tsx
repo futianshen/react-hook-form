@@ -6,7 +6,7 @@ type FormValues = {
   password: string
 }
 
-function FormUnControlled() {
+function UnControlledForm() {
   const { register, handleSubmit } = useForm<FormValues>({
     defaultValues: {
       username: "username",
@@ -27,8 +27,8 @@ function FormUnControlled() {
   )
 }
 
-const UncontrolledInput = forwardRef<HTMLInputElement>((props, ref) => (
-  <input {...props} ref={ref} />
-))
+const UncontrolledInput = forwardRef<HTMLInputElement>(function (props, ref) {
+  return <input {...props} ref={ref} />
+})
 
-export default FormUnControlled
+export default UnControlledForm

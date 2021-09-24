@@ -5,9 +5,11 @@ import FormControlled from "./FormControlled"
 function App() {
   return (
     <div>
-      <h2>Hello Vite + React!</h2>
-      <FormUnControlled />
+      <h2>Controlled Component</h2>
       <FormControlled />
+      <hr />
+      <h2>UnControlled Component</h2>
+      <FormUnControlled />
     </div>
   )
 }

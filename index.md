@@ -45,7 +45,7 @@ type FormValues = {
   password: string
 }
 
-const FormControlled = () => {
+function FormControlled() {
   const { control, handleSubmit } = useForm<FormValues>({
     defaultValues: {
       username: "username",
@@ -70,12 +70,14 @@ const FormControlled = () => {
   )
 }
 
-const ControlledInput = (props: {
+function ControlledInput(props: {
   value?: string
   onChange?: ChangeEventHandler<HTMLInputElement>
-}) => <input {...props} />
+}) {
+  return <input {...props} />
+}
 
-const UseControllerInput = (props: UseControllerProps<FormValues>) => {
+function UseControllerInput(props: UseControllerProps<FormValues>) {
   const { field } = useController(props)
 
   return <input {...field} />
@@ -85,15 +87,12 @@ const UseControllerInput = (props: UseControllerProps<FormValues>) => {
 #### Uncontrolled Component
 
 ```tsx
-import React, { forwardRef } from "react"
-import { useForm } from "react-hook-form"
-
 type FormValues = {
   username: string
   password: string
 }
 
-function FormUnControlled() {
+function UnControlledForm() {
   const { register, handleSubmit } = useForm<FormValues>({
     defaultValues: {
       username: "username",
@@ -114,9 +113,9 @@ function FormUnControlled() {
   )
 }
 
-const UncontrolledInput = forwardRef<HTMLInputElement>((props, ref) => (
-  <input {...props} ref={ref} />
-))
+const UncontrolledInput = forwardRef<HTMLInputElement>(function (props, ref) {
+  return <input {...props} ref={ref} />
+})
 ```
 
 ### 開始解釋 Code
