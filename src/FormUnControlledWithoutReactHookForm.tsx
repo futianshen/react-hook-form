@@ -1,18 +1,21 @@
 import React, { forwardRef, useEffect, useRef } from "react"
 
-function UnControlledForm() {
-  const [usernameRef, passwordRef] = Array(2)
-    .fill("input")
-    .map((inputElem) =>
-      useRef<HTMLInputElement>(document.createElement(inputElem))
-    )
+const generateInputRef = (initialValue: string) => {
+  const inputElem = document.createElement("input")
+  const inputRef = useRef(inputElem)
 
   useEffect(() => {
-    ;[usernameRef.current.value, passwordRef.current.value] = [
-      "username",
-      "password",
-    ]
+    inputRef.current.value = initialValue
   }, [])
+
+  return inputRef
+}
+
+function UnControlledForm() {
+  const [usernameRef, passwordRef] = [
+    generateInputRef("username"),
+    generateInputRef("password"),
+  ]
 
   const submit = () => {
     const data = {

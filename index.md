@@ -21,16 +21,18 @@ React 16.8 之後版本
 
 ### 想要解決的問題
 
-因為業務需求，最近正在將公司專案中的 Antd Form migrate 到 React-Hook-Form，發現 React-Hook-Form 提供了 controlled 和 uncontrolled component 的兩種解決方案，這跟我原來所熟悉的 Antd 表單很不一樣。
+因為業務需求，最近正在將公司專案中的 Antd Form migrate 到 React-Hook-Form，發現 React Hook Form 提供了 controlled 和 uncontrolled component 的兩種解決方案，這跟我原來所熟悉的 Antd 基於 Controlled Component 的作法很不一樣，所以這篇文章
+主要是我想要試圖分析，這兩種有什麼差別，他們的優勢和劣勢分別是什麼？
 
 ### 這篇文章希望能解決自己的什麼問題？
 
 什麼場景下適合使用 controlled component？什麼時候適合使用 uncontrolled component ?
 
-主流的表單設計
+主流的表單設計 Controlled Component
 Antd, Formik
 
-### 從簡單的範例開始
+### 初探 React-Hook-Form 從簡單的範例開始
+參考官方文件，我們可以很快的建立一個簡單的表單
 
 #### controlled component
 
@@ -87,6 +89,8 @@ function UseControllerInput(props: UseControllerProps<FormValues>) {
 }
 ```
 
+[程式碼解釋]
+
 #### Uncontrolled Component
 
 ```tsx
@@ -121,34 +125,186 @@ const UncontrolledInput = forwardRef<HTMLInputElement>(function (props, ref) {
 })
 ```
 
+[程式碼解釋]
+
 ### 最最最基本的表單需要什麼？
-- 蒐集資料
-- 提交表單
+從上面這個基本案例我們只做到 2 件事情
 
-如果只是這樣我們用 ref 也能做到
+1. 蒐集資料
+2. 提交表單
 
+但如果只是這樣，我們其實不需要使用 React Hook Form，因為這樣我們自己使用 React 的 Hook 也能做的到
 
-### 開始解釋 Code
+#### Controlled Component
 
-### 看看背後是怎麼實作的
+```tsx
+import React, { useState } from "react"
 
-### 從 Use Case 開始，做一些更複雜的操作
+type FormValues = {
+  username: string
+  password: string
+}
 
+function FormControlled() {
+  const [{ username, password }, setFormValues] = useState<FormValues>({
+    username: "username",
+    password: "password",
+  })
+  const submit = () => {
+    const data = { username, password }
+    console.log(data)
+  }
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        submit()
+      }}
+    >
+      <input
+        name="username"
+        value={username}
+        onChange={(e) =>
+          setFormValues((prev) => ({
+            username: e.target.value,
+            password: prev.password,
+          }))
+        }
+      />
+      <input
+        name="password"
+        value={password}
+        onChange={(e) =>
+          setFormValues((prev) => ({
+            username: prev.username,
+            password: e.target.value,
+          }))
+        }
+      />
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+[程式碼解釋]
+
+#### UnControlled Component
+
+```tsx
+import { pipe } from "ramda"
+import React, { useRef, MutableRefObject, useEffect, forwardRef } from "react"
+
+const generateInputRef = () =>
+  pipe<string, HTMLInputElement, MutableRefObject<HTMLInputElement>>(
+    document.createElement,
+    useRef
+  )("input")
+
+function UnControlledForm() {
+  const [usernameRef, passwordRef] = [generateInputRef(), generateInputRef()]
+
+  // initialize defaultValues
+  useEffect(() => {
+    ;[usernameRef.current.value, passwordRef.current.value] = [
+      "username",
+      "password",
+    ]
+  }, [])
+
+  const submit = () => {
+    const data = {
+      username: usernameRef.current.value,
+      password: passwordRef.current.value,
+    }
+    console.log(data)
+  }
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        submit()
+      }}
+    >
+      <input
+        ref={usernameRef}
+        onChange={(e) => (usernameRef.current.value = e.target.value)}
+      />
+      <UncontrolledInput
+        ref={passwordRef}
+        onChange={(value) => (passwordRef.current.value = value)}
+      />
+
+      <input type="submit" />
+    </form>
+  )
+}
+
+const UncontrolledInput = forwardRef<
+  HTMLInputElement,
+  { onChange?: (value: string) => void }
+>(function (props, ref) {
+  return <input onChange={(e) => props.onChange?.(e.target.value)} ref={ref} />
+})
+```
+
+[程式碼解釋]
+
+### React Hook Form 幫我們解決了什麼問題？
+### 從 Use Case 開始，做一些更複雜的操作，可以跟我一起做做看
 從基本的擴展
 
+從上面這個基本案例我們只做到 2 件事情
 
-- 自動幫忙加 @gmail.com `Controller`
-- 連動表單 B 项的值跟随 A 项变化 `Controller`
-- 敏感词禁止 `Controller`
-- 动态增减表单项 `useFieldArray`
-- 错误提示與错误聚焦
+1. 蒐集資料
+2. 提交表單
 
-### 結論
+副作用
+- 連動表單 
+  - B 项的值跟随 A 项变化 `Controller`
+  - 自動幫忙加 @gmail.com `Controller`
 
+- 表單驗證
+  - 敏感词禁止 `Controller`
+
+- 動態表單
+  -  `useFieldArray`
+
+- 錯誤處理
+  - 提示
+  - focus
+
+### 看看背後是怎麼實作的 有時間看看 Source Code
+
+
+
+### 結論，什麼時候該使用哪一個？
+在選擇使用哪一種方案的時候我們應該考慮什麼？
+給一個混用的案例
+
+你又遇到什麼複雜的表單操作嗎？歡迎和我討論
+
+### 參考資料
+
+- GitHub Repo
 
 ### 心得
+
 做一個能優化使用者體驗的東西研究
 研究他背後是用了那些技術和解決方案
 工程師，成為一個解決方案的研究者
 
 提供一個解決方案
+
+UX 的定義
+提高所有合作夥伴的 UX
+
+我想要交付什麼？提高所有合作夥伴的 UX
+死嗑自己 娛樂大家
+
+如何了解一個技術，能不能用盡所有文件上的東西，想辦法找到一個現實中的問題來解決。
+
+
+> 過一段時間就重構自己的文章，對自己的文字負責
