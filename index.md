@@ -7,13 +7,16 @@
 
 ### 誰可能比較適合閱讀
 
-Hook 之後版本
+React 16.8 之後版本
 有表單的需要
 
 ### Acknowledge
 
 - controlled component
 - uncontrolled component
+- useState
+- useRef
+- useEffect
 - forwardRef
 
 ### 想要解決的問題
@@ -141,3 +144,11 @@ const UncontrolledInput = forwardRef<HTMLInputElement>(function (props, ref) {
 - 错误提示與错误聚焦
 
 ### 結論
+
+
+### 心得
+做一個能優化使用者體驗的東西研究
+研究他背後是用了那些技術和解決方案
+工程師，成為一個解決方案的研究者
+
+提供一個解決方案
