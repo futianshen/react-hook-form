@@ -7,30 +7,39 @@ const countries = [
 ]
 
 function PracticeUnControlled() {
-  const { register, watch, handleSubmit, setValue } = useForm({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    setFocus,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
-      username: "username",
-      password: "password",
-      firstName: "",
-      lastName: "",
-      nickname: "",
-      phone: "",
-      email: "",
+      username: "",
+      password: "",
       country: "台灣",
       city: "台北",
     },
   })
-  const submit = handleSubmit((data) => console.log(data))
+  const submit = handleSubmit(
+    (data) => console.log(data),
+    (error) => {
+      setFocus("username")
+      console.error(error)
+    }
+  )
 
   return (
     <form onSubmit={submit}>
-      <input {...register("username")} />
-      <input {...register("password")} />
-      <input {...register("firstName")} />
-      <input {...register("lastName")} />
-      <input {...register("nickname")} />
-      <input {...register("phone")} />
-      <input {...register("email")} />
+      <input {...register("username", { required: true, maxLength: 20 })} />
+      {errors.username?.type}
+      <input
+        type="password"
+        {...register("password", { required: true, maxLength: 20 })}
+      />
+      {errors.password?.type}
+
       <select
         {...register("country")}
         onChange={(e) => {
@@ -63,15 +72,10 @@ function PracticeUnControlled() {
 }
 
 export default PracticeUnControlled
-//
-// - [x]連動表單 B 项的值跟随 A 项变化 `Controller`
-//
 // - 表單驗證
-// - 敏感词禁止 `Controller`
-//
-// - 動態表單
-// - `useFieldArray`
-//
-// - 錯誤處理
-// - 提示
-// - focus
+// - [x]連動表單 B 项的值跟随 A 项变化 `Controller`
+// - [x]錯誤處理
+//    - [x]提示
+//    - focus
+
+// watch 和 useWatch 有什麼不同？

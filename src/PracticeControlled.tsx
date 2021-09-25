@@ -12,30 +12,43 @@ const countries = [
 ]
 
 function PracticeControlled() {
-  const { control, handleSubmit, setValue, getValues } = useForm({
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    getValues,
+    setFocus,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
-      username: "username",
-      password: "password",
-      firstName: "",
-      lastName: "",
-      nickname: "",
-      phone: "",
-      email: "",
+      username: "",
+      password: "",
       country: "台灣",
-      city: "日本",
+      city: "台北",
     },
   })
-  const submit = handleSubmit((data) => console.log(data))
+  const submit = handleSubmit(
+    (data) => console.log(data),
+    (error) => {
+      setFocus("username")
+      console.error(error)
+    }
+  )
 
   return (
     <form onSubmit={submit}>
-      <Input name="username" control={control} />
-      <Input name="password" control={control} />
-      <Input name="firstName" control={control} />
-      <Input name="lastName" control={control} />
-      <Input name="nickname" control={control} />
-      <Input name="phone" control={control} />
-      <Input name="email" control={control} />
+      <Input
+        name="username"
+        control={control}
+        rules={{ required: true, maxLength: 20 }}
+      />
+      {errors.username?.type}
+      <Input
+        name="password"
+        control={control}
+        rules={{ required: true, maxLength: 20 }}
+      />
+      {errors.password?.type}
 
       <Controller
         name="country"
@@ -86,13 +99,9 @@ function PracticeControlled() {
 
 function Input(
   props: UseControllerProps<{
+    // 為什麼要放這麼多 type
     username: string
     password: string
-    firstName: string
-    lastName: string
-    nickname: string
-    phone: string
-    email: string
     country: string
     city: string
   }>
@@ -103,15 +112,10 @@ function Input(
 }
 
 export default PracticeControlled
-//
-// - [x]連動表單 B 项的值跟随 A 项变化 `Controller`
-//
 // - 表單驗證
-// - 敏感词禁止 `Controller`
-//
-// - 動態表單
-// - `useFieldArray`
-//
-// - 錯誤處理
-// - 提示
-// - focus
+// - [x]連動表單 B 项的值跟随 A 项变化 `Controller`
+// - [x]錯誤處理
+//   - [x]提示
+//   - focus
+
+// useController 和 Controller 使用場景上有什麼不同？
