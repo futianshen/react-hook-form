@@ -3,11 +3,13 @@ import FormUnControlled from "./FormUnControlled"
 import FormControlled from "./FormControlled"
 import FormControlledWithoutReactHookForm from "./FormControlledWithoutReactHookForm"
 import FormUnControlledWithoutReactHookForm from "./FormUnControlledWithoutReactHookForm"
+import PracticeUnControlled from "./PracticeUnControlled"
+import PracticeControlled from "./PracticeControlled"
 
 function App() {
   return (
     <div>
-      <h2>Controlled Component</h2>
+      {/* <h2>Controlled Component</h2>
       <FormControlled />
       <hr />
 
@@ -20,7 +22,11 @@ function App() {
       <hr />
 
       <h2>UnControlled Component(without react hook form)</h2>
-      <FormUnControlledWithoutReactHookForm />
+      <FormUnControlledWithoutReactHookForm /> */}
+      <h2>PracticeUnControlled</h2>
+      <PracticeUnControlled />
+      <h2>PracticeControlled</h2>
+      <PracticeControlled />
     </div>
   )
 }
