@@ -6,13 +6,8 @@ import {
   UseControllerProps,
 } from "react-hook-form"
 
-type FormValues = {
-  username: string
-  password: string
-}
-
 function FormControlled() {
-  const { control, handleSubmit } = useForm<FormValues>({
+  const { control, handleSubmit } = useForm({
     defaultValues: {
       username: "username",
       password: "password",
@@ -43,7 +38,9 @@ function ControlledInput(props: {
   return <input {...props} />
 }
 
-function UseControllerInput(props: UseControllerProps<FormValues>) {
+function UseControllerInput(
+  props: UseControllerProps<{ username: string; password: string }>
+) {
   const { field } = useController(props)
 
   return <input {...field} />

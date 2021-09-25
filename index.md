@@ -32,6 +32,7 @@ React 16.8 之後版本
 Antd, Formik
 
 ### 初探 React-Hook-Form 從簡單的範例開始
+
 參考官方文件，我們可以很快的建立一個簡單的表單
 
 #### controlled component
@@ -45,13 +46,8 @@ import {
   UseControllerProps,
 } from "react-hook-form"
 
-type FormValues = {
-  username: string
-  password: string
-}
-
 function FormControlled() {
-  const { control, handleSubmit } = useForm<FormValues>({
+  const { control, handleSubmit } = useForm({
     defaultValues: {
       username: "username",
       password: "password",
@@ -82,7 +78,9 @@ function ControlledInput(props: {
   return <input {...props} />
 }
 
-function UseControllerInput(props: UseControllerProps<FormValues>) {
+function UseControllerInput(
+  props: UseControllerProps<{ username: string; password: string }>
+) {
   const { field } = useController(props)
 
   return <input {...field} />
@@ -94,13 +92,11 @@ function UseControllerInput(props: UseControllerProps<FormValues>) {
 #### Uncontrolled Component
 
 ```tsx
-type FormValues = {
-  username: string
-  password: string
-}
+import React, { forwardRef } from "react"
+import { useForm } from "react-hook-form"
 
 function UnControlledForm() {
-  const { register, handleSubmit } = useForm<FormValues>({
+  const { register, handleSubmit } = useForm({
     defaultValues: {
       username: "username",
       password: "password",
@@ -120,7 +116,7 @@ function UnControlledForm() {
   )
 }
 
-const UncontrolledInput = forwardRef<HTMLInputElement>(function (props, ref) {
+const UncontrolledInput = forwardRef(function (props, ref) {
   return <input {...props} ref={ref} />
 })
 ```
@@ -128,6 +124,7 @@ const UncontrolledInput = forwardRef<HTMLInputElement>(function (props, ref) {
 [程式碼解釋]
 
 ### 最最最基本的表單需要什麼？
+
 從上面這個基本案例我們只做到 2 件事情
 
 1. 蒐集資料
@@ -140,13 +137,8 @@ const UncontrolledInput = forwardRef<HTMLInputElement>(function (props, ref) {
 ```tsx
 import React, { useState } from "react"
 
-type FormValues = {
-  username: string
-  password: string
-}
-
 function FormControlled() {
-  const [{ username, password }, setFormValues] = useState<FormValues>({
+  const [{ username, password }, setFormValues] = useState({
     username: "username",
     password: "password",
   })
@@ -193,25 +185,25 @@ function FormControlled() {
 #### UnControlled Component
 
 ```tsx
-import { pipe } from "ramda"
-import React, { useRef, MutableRefObject, useEffect, forwardRef } from "react"
+import React, { forwardRef, useEffect, useRef } from "react"
 
-const generateInputRef = () =>
-  pipe<string, HTMLInputElement, MutableRefObject<HTMLInputElement>>(
-    document.createElement,
-    useRef
-  )("input")
+const useInputRef = (initialValue: string) => {
+  const inputElem = document.createElement("input")
+  const inputRef = useRef(inputElem)
+
+  useEffect(() => {
+    // 為什麼這裡要放在 useEffect 裡面，不能直接放在 useEffect 外面？
+    inputRef.current.value = initialValue
+  }, [])
+
+  return inputRef
+}
 
 function UnControlledForm() {
-  const [usernameRef, passwordRef] = [generateInputRef(), generateInputRef()]
-
-  // initialize defaultValues
-  useEffect(() => {
-    ;[usernameRef.current.value, passwordRef.current.value] = [
-      "username",
-      "password",
-    ]
-  }, [])
+  const [usernameRef, passwordRef] = [
+    useInputRef("username"),
+    useInputRef("password"),
+  ]
 
   const submit = () => {
     const data = {
@@ -253,7 +245,9 @@ const UncontrolledInput = forwardRef<
 [程式碼解釋]
 
 ### React Hook Form 幫我們解決了什麼問題？
+
 ### 從 Use Case 開始，做一些更複雜的操作，可以跟我一起做做看
+
 從基本的擴展
 
 從上面這個基本案例我們只做到 2 件事情
@@ -262,7 +256,9 @@ const UncontrolledInput = forwardRef<
 2. 提交表單
 
 副作用
-- 連動表單 
+
+- 連動表單
+
   - B 项的值跟随 A 项变化 `Controller`
   - 自動幫忙加 @gmail.com `Controller`
 
@@ -270,21 +266,42 @@ const UncontrolledInput = forwardRef<
   - 敏感词禁止 `Controller`
 
 - 動態表單
-  -  `useFieldArray`
+  - `useFieldArray`
 
 - 錯誤處理
   - 提示
   - focus
 
-### 看看背後是怎麼實作的 有時間看看 Source Code
+username
+password
+firstName
+lastName
+nickname
+phone
+email
 
-
+### 看看背後是怎麼實作的 有時間的話看看 Source Code
 
 ### 結論，什麼時候該使用哪一個？
+
 在選擇使用哪一種方案的時候我們應該考慮什麼？
 給一個混用的案例
 
 你又遇到什麼複雜的表單操作嗎？歡迎和我討論
+
+Performance
+開發者體驗
+
+Building forms in React can be a hard and repetitive process. You have to deal with the form data, validate it, configure when and how to show the error message for invalid inputs, and also be able to reset the form to the initial state. In such a situation, you’ll want to use a form library to help out.
+
+When doing so, there are various features you should use to evaluate a form library. They are:
+
+    Form state management
+    Validation
+    Integration with custom component and third-party libraries
+    Syntax
+    Performance
+
 
 ### 參考資料
 
@@ -305,6 +322,5 @@ UX 的定義
 死嗑自己 娛樂大家
 
 如何了解一個技術，能不能用盡所有文件上的東西，想辦法找到一個現實中的問題來解決。
-
 
 > 過一段時間就重構自己的文章，對自己的文字負責

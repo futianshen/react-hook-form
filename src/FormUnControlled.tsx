@@ -1,13 +1,8 @@
 import React, { forwardRef } from "react"
 import { useForm } from "react-hook-form"
 
-type FormValues = {
-  username: string
-  password: string
-}
-
 function UnControlledForm() {
-  const { register, handleSubmit } = useForm<FormValues>({
+  const { register, handleSubmit } = useForm({
     defaultValues: {
       username: "username",
       password: "password",

@@ -5,6 +5,7 @@ const useInputRef = (initialValue: string) => {
   const inputRef = useRef(inputElem)
 
   useEffect(() => {
+    // 為什麼這裡要放在 useEffect 裡面，不能直接放在 useEffect 外面？
     inputRef.current.value = initialValue
   }, [])
 

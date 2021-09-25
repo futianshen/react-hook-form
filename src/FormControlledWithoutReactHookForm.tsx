@@ -1,12 +1,7 @@
 import React, { useState } from "react"
 
-type FormValues = {
-  username: string
-  password: string
-}
-
 function FormControlled() {
-  const [{ username, password }, setFormValues] = useState<FormValues>({
+  const [{ username, password }, setFormValues] = useState({
     username: "username",
     password: "password",
   })
