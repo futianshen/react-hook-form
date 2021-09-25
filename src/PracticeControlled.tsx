@@ -65,7 +65,6 @@ function PracticeControlled() {
         name="city"
         control={control}
         render={({ field: { value, onChange } }) => {
-          console.log("render")
           return (
             <select value={value} onChange={onChange}>
               {countries

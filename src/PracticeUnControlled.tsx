@@ -1,5 +1,5 @@
+import React from "react"
 import { useForm } from "react-hook-form"
-import React, { useState } from "react"
 
 const countries = [
   { name: "台灣", cities: ["台北", "桃園", "高雄"] },
@@ -7,8 +7,7 @@ const countries = [
 ]
 
 function PracticeUnControlled() {
-  const [cities, setCities] = useState(["台北", "桃園", "高雄"])
-  const { register, handleSubmit, getValues, setValue } = useForm({
+  const { register, watch, handleSubmit, setValue } = useForm({
     defaultValues: {
       username: "username",
       password: "password",
@@ -22,7 +21,7 @@ function PracticeUnControlled() {
     },
   })
   const submit = handleSubmit((data) => console.log(data))
-  console.log("render")
+
   return (
     <form onSubmit={submit}>
       <input {...register("username")} />
@@ -41,11 +40,6 @@ function PracticeUnControlled() {
             countries.find((country) => country.name === e.target.value)
               ?.cities[0] || ""
           )
-          // 一定要這樣做嗎？有沒有內建的方式可以出發 cities 的內容渲染
-          setCities(
-            countries.find((country) => country.name === e.target.value)
-              ?.cities || []
-          )
         }}
       >
         {countries.map((country) => (
@@ -55,13 +49,14 @@ function PracticeUnControlled() {
         ))}
       </select>
       <select {...register("city")}>
-        {cities.map((city) => (
-          <option key={city} value={city}>
-            {city}
-          </option>
-        ))}
+        {countries
+          .find((country) => country.name === watch("country"))
+          ?.cities.map((city) => (
+            <option key={city} value={city}>
+              {city}
+            </option>
+          ))}
       </select>
-
       <input type="submit" />
     </form>
   )
