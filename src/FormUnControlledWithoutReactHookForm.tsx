@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useRef } from "react"
 
-const generateInputRef = (initialValue: string) => {
+const useInputRef = (initialValue: string) => {
   const inputElem = document.createElement("input")
   const inputRef = useRef(inputElem)
 
@@ -13,8 +13,8 @@ const generateInputRef = (initialValue: string) => {
 
 function UnControlledForm() {
   const [usernameRef, passwordRef] = [
-    generateInputRef("username"),
-    generateInputRef("password"),
+    useInputRef("username"),
+    useInputRef("password"),
   ]
 
   const submit = () => {
