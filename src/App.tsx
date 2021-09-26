@@ -5,6 +5,7 @@ import FormControlledWithoutReactHookForm from "./FormControlledWithoutReactHook
 import FormUnControlledWithoutReactHookForm from "./FormUnControlledWithoutReactHookForm"
 import PracticeUnControlled from "./PracticeUnControlled"
 import PracticeControlled from "./PracticeControlled"
+import TodoList from "./TodoList"
 
 function App() {
   return (
@@ -23,10 +24,11 @@ function App() {
 
       <h2>UnControlled Component(without react hook form)</h2>
       <FormUnControlledWithoutReactHookForm /> */}
-      <h2>PracticeUnControlled</h2>
+      {/* <h2>PracticeUnControlled</h2>
       <PracticeUnControlled />
       <h2>PracticeControlled</h2>
-      <PracticeControlled />
+      <PracticeControlled /> */}
+      <TodoList />
     </div>
   )
 }
