@@ -8,7 +8,7 @@ import PracticeControlled from "./PracticeControlled"
 
 function App() {
   return (
-    <div>
+    <div id="app">
       {/* <h2>Controlled Component</h2>
       <FormControlled />
       <hr />

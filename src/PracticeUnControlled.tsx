@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form"
 const countries = [
   { name: "台灣", cities: ["台北", "桃園", "高雄"] },
   { name: "日本", cities: ["大阪", "東京", "北海道"] },
+  { name: "中國", cities: ["北京", "上海"] },
+  { name: "韓國", cities: ["首爾", "釜山"] },
 ]
 
 function PracticeUnControlled() {
@@ -22,23 +24,24 @@ function PracticeUnControlled() {
       city: "台北",
     },
   })
-  const submit = handleSubmit(
-    (data) => console.log(data),
-    (error) => {
-      setFocus("username")
-      console.error(error)
-    }
-  )
+  const submit = handleSubmit((data) => console.log(data))
 
   return (
     <form onSubmit={submit}>
-      <input {...register("username", { required: true, maxLength: 20 })} />
-      {errors.username?.type}
-      <input
-        type="password"
-        {...register("password", { required: true, maxLength: 20 })}
-      />
-      {errors.password?.type}
+      <label>
+        <span>username</span>
+        <input {...register("username", { required: true, maxLength: 20 })} />
+        {errors.username?.type && <span>{errors.username.type}</span>}
+      </label>
+
+      <label>
+        <span>password</span>
+        <input
+          type="password"
+          {...register("password", { required: true, maxLength: 20 })}
+        />
+        {errors.password?.type && <span>{errors.password.type}</span>}
+      </label>
 
       <select
         {...register("country")}
@@ -66,6 +69,7 @@ function PracticeUnControlled() {
             </option>
           ))}
       </select>
+
       <input type="submit" />
     </form>
   )

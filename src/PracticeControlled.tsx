@@ -9,6 +9,8 @@ import React from "react"
 const countries = [
   { name: "台灣", cities: ["台北", "桃園", "高雄"] },
   { name: "日本", cities: ["大阪", "東京", "北海道"] },
+  { name: "中國", cities: ["北京", "上海"] },
+  { name: "韓國", cities: ["首爾", "釜山"] },
 ]
 
 function PracticeControlled() {
@@ -27,28 +29,41 @@ function PracticeControlled() {
       city: "台北",
     },
   })
-  const submit = handleSubmit(
-    (data) => console.log(data),
-    (error) => {
-      setFocus("username")
-      console.error(error)
-    }
-  )
+  const submit = handleSubmit((data) => console.log(data))
 
   return (
     <form onSubmit={submit}>
-      <Input
-        name="username"
-        control={control}
-        rules={{ required: true, maxLength: 20 }}
-      />
-      {errors.username?.type}
-      <Input
-        name="password"
-        control={control}
-        rules={{ required: true, maxLength: 20 }}
-      />
-      {errors.password?.type}
+      <label>
+        <span>username</span>
+        <Controller
+          name="username"
+          control={control}
+          rules={{ required: true, maxLength: 20 }}
+          render={({ field: { ref, name, value, onChange } }) => (
+            <input ref={ref} name={name} value={value} onChange={onChange} />
+          )}
+        />
+        {errors.username?.type && <span>{errors.username.type}</span>}
+      </label>
+
+      <label>
+        <span>password</span>
+        <Controller
+          name="password"
+          control={control}
+          rules={{ required: true, maxLength: 20 }}
+          render={({ field: { ref, name, value, onChange } }) => (
+            <input
+              ref={ref}
+              type="password"
+              name={name}
+              value={value}
+              onChange={onChange}
+            />
+          )}
+        />
+        {errors.password?.type && <span>{errors.password.type}</span>}
+      </label>
 
       <Controller
         name="country"
@@ -95,20 +110,6 @@ function PracticeControlled() {
       <input type="submit" />
     </form>
   )
-}
-
-function Input(
-  props: UseControllerProps<{
-    // 為什麼要放這麼多 type
-    username: string
-    password: string
-    country: string
-    city: string
-  }>
-) {
-  const { field } = useController(props)
-
-  return <input {...field} />
 }
 
 export default PracticeControlled

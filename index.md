@@ -257,33 +257,23 @@ const UncontrolledInput = forwardRef<
 
 副作用
 
-- 連動表單
-
-  - B 项的值跟随 A 项变化 `Controller`
-  - 自動幫忙加 @gmail.com `Controller`
-
-- 表單驗證
-  - 敏感词禁止 `Controller`
-
-- 動態表單
-  - `useFieldArray`
-
 - 錯誤處理
+
   - 提示
   - focus
 
-username
-password
-firstName
-lastName
-nickname
-phone
-email
+- 表單驗證
 
+  - 敏感词禁止 `Controller`
+
+- 連動表單
+  - B 项的值跟随 A 项变化 `Controller`
+
+如果使用原生的要怎麼實作？
+Source 是怎麼實作的
 ### 看看背後是怎麼實作的 有時間的話看看 Source Code
 
 ### 結論，什麼時候該使用哪一個？
-
 在選擇使用哪一種方案的時候我們應該考慮什麼？
 給一個混用的案例
 
@@ -301,7 +291,6 @@ When doing so, there are various features you should use to evaluate a form libr
     Integration with custom component and third-party libraries
     Syntax
     Performance
-
 
 ### 參考資料
 
