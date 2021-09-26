@@ -270,8 +270,25 @@ const UncontrolledInput = forwardRef<
   - B 项的值跟随 A 项变化 `Controller`
 
 如果使用原生的要怎麼實作？
+React Hook Form 如何幫助我們處理副作用
+
+
+
 Source 是怎麼實作的
 ### 看看背後是怎麼實作的 有時間的話看看 Source Code
+<!-- uncontrolled -->
+- useForm
+register
+watch
+
+<!-- controlled -->
+control
+setValue
+getValues
+
+<!-- all -->
+formState
+handleSubmit
 
 ### 結論，什麼時候該使用哪一個？
 在選擇使用哪一種方案的時候我們應該考慮什麼？
@@ -313,3 +330,17 @@ UX 的定義
 如何了解一個技術，能不能用盡所有文件上的東西，想辦法找到一個現實中的問題來解決。
 
 > 過一段時間就重構自己的文章，對自己的文字負責
+
+下一階段，看原始碼如何實作
+
+
+現在看起來，React Hook Form 好像是結合 uncontrolled component 和 controlled component 來做使用
+
+
+寫程式真的是一個需要把手弄髒才能學會的技能
+
+
+### 寫作套路
+1. 「工具」使用
+2. 自己實作一次工具做到的事情
+3. 查看「工具」如何實作並解釋
