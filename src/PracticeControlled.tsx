@@ -9,13 +9,7 @@ const countries = [
 ]
 
 function PracticeControlled() {
-  const {
-    control,
-    setValue,
-    getValues,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  const { control, setValue, getValues, handleSubmit } = useForm({
     defaultValues: {
       username: "",
       password: "",
@@ -33,11 +27,16 @@ function PracticeControlled() {
           name="username"
           control={control}
           rules={{ required: true, maxLength: 20 }}
-          render={({ field: { ref, name, value, onChange } }) => (
-            <input ref={ref} name={name} value={value} onChange={onChange} />
+          render={({
+            field: { ref, name, value, onChange },
+            formState: { errors },
+          }) => (
+            <>
+              <input ref={ref} name={name} value={value} onChange={onChange} />
+              {errors.username?.type && <span>{errors.username.type}</span>}
+            </>
           )}
         />
-        {errors.username?.type && <span>{errors.username.type}</span>}
       </label>
 
       <label>
@@ -46,17 +45,22 @@ function PracticeControlled() {
           name="password"
           control={control}
           rules={{ required: true, maxLength: 20 }}
-          render={({ field: { ref, name, value, onChange } }) => (
-            <input
-              ref={ref}
-              type="password"
-              name={name}
-              value={value}
-              onChange={onChange}
-            />
+          render={({
+            field: { ref, name, value, onChange },
+            formState: { errors },
+          }) => (
+            <>
+              <input
+                ref={ref}
+                type="password"
+                name={name}
+                value={value}
+                onChange={onChange}
+              />
+              {errors.password?.type && <span>{errors.password.type}</span>}
+            </>
           )}
         />
-        {errors.password?.type && <span>{errors.password.type}</span>}
       </label>
 
       <Controller

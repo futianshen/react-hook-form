@@ -12,8 +12,8 @@ function PracticeUnControlled() {
   const {
     register,
     watch,
-    handleSubmit,
     formState: { errors },
+    handleSubmit,
   } = useForm({
     defaultValues: {
       username: "",
