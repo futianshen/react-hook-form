@@ -11,10 +11,8 @@ const countries = [
 function PracticeUnControlled() {
   const {
     register,
-    handleSubmit,
-    setValue,
     watch,
-    setFocus,
+    handleSubmit,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -43,17 +41,7 @@ function PracticeUnControlled() {
         {errors.password?.type && <span>{errors.password.type}</span>}
       </label>
 
-      <select
-        {...register("country")}
-        onChange={(e) => {
-          setValue("country", e.target.value)
-          setValue(
-            "city",
-            countries.find((country) => country.name === e.target.value)
-              ?.cities[0] || ""
-          )
-        }}
-      >
+      <select {...register("country")}>
         {countries.map((country) => (
           <option key={country.name} value={country.name}>
             {country.name}

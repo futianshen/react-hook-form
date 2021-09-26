@@ -1,10 +1,5 @@
-import {
-  Controller,
-  useController,
-  UseControllerProps,
-  useForm,
-} from "react-hook-form"
 import React from "react"
+import { useForm, Controller } from "react-hook-form"
 
 const countries = [
   { name: "台灣", cities: ["台北", "桃園", "高雄"] },
@@ -16,10 +11,9 @@ const countries = [
 function PracticeControlled() {
   const {
     control,
-    handleSubmit,
     setValue,
     getValues,
-    setFocus,
+    handleSubmit,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -68,11 +62,10 @@ function PracticeControlled() {
       <Controller
         name="country"
         control={control}
-        render={({ field: { value, onChange } }) => (
+        render={({ field: { value } }) => (
           <select
             value={value}
             onChange={(e) => {
-              onChange(e)
               setValue("country", e.target.value)
               setValue(
                 "city",
