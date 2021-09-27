@@ -52,7 +52,7 @@ const initialList = [
   },
 ]
 function TodoList() {
-  const [list, setList] = useState<Todo[]>(initialList)
+  const [list, setList] = useState<Todo[]>([])
 
   const handleGroupAdd = () => {
     setList((prevList) => [
@@ -234,6 +234,7 @@ function TodoList() {
               ))}
             </ul>
           )}
+          <hr />
         </div>
       ))}
 
@@ -312,3 +313,6 @@ function Todo(
 export default TodoList
 
 // 順便了解一下 key 用 index 會有什麼問題？
+
+// 重新 review 一次優化
+// 用 react-hook-form 做一次
