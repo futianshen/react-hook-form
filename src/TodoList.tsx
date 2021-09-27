@@ -1,12 +1,13 @@
 import React, { useState } from "react"
 
 type Todo = {
+  // 這裡的 type 定義可以再優化嗎
   id: string
   value: string
   isDone: boolean
-  list?: Todo[]
+  list: Pick<Todo, "id" | "value" | "isDone">[]
 }
-
+let id = 10
 function TodoList() {
   const [list, setList] = useState<Todo[]>([
     {
@@ -39,12 +40,12 @@ function TodoList() {
       list: [
         {
           id: "a",
-          value: "group-todo-03",
+          value: "group-todo-01",
           isDone: false,
         },
         {
           id: "b",
-          value: "group-todo-04",
+          value: "group-todo-02",
           isDone: false,
         },
       ],
@@ -52,49 +53,76 @@ function TodoList() {
   ])
 
   const handleAddTodoGroupItem = () => {
-    // setList((prevList) => [
-    //   ...prevList,
-    //   {
-    //     id: "2",
-    //     value: "第一個群組",
-    //     list: [
-    //       {
-    //         id: "a",
-    //         value: "group-todo-01",
-    //         isDone: false,
-    //       },
-    //     ],
-    //   },
-    // ])
+    setList((prevList) => [
+      ...prevList,
+      {
+        id: `${id}`,
+        value: `第 ${id} 個群組`,
+        isDone: false,
+        list: [
+          {
+            id: `${id}-1`,
+            value: "group-todo-01",
+            isDone: false,
+          },
+        ],
+      },
+    ])
   }
   const handleAddTodoItem = () => {
-    // setList((prevList) => [
-    //   ...prevList,
-    //   {
-    //     id: "2",
-    //     list: [
-    //       {
-    //         id: "a",
-    //         value: "group-todo-01",
-    //         isDone: false,
-    //       },
-    //     ],
-    //   },
-    // ])
+    setList((prevList) => [
+      ...prevList,
+      {
+        id: `${id}`,
+        value: "",
+        isDone: false,
+        list: [
+          {
+            id: `${id}-1`,
+            value: "group-todo-01",
+            isDone: false,
+          },
+        ],
+      },
+    ])
   }
   const handleCheckTodoItem = (itemId: string, subItemId: string) => {}
   const handleEditTodoItem = (itemId: string, subItemid: string) => {}
   const handleDeleteTodoItem = (itemId: string, subItemId: string) => {}
-
-  const a = typeof list
+  const handleDeleteSubTodoItem = (itemId: string, subItemId: string) => {}
 
   return (
     <div>
-      {list.map((item) => (
+      {list.map((item, i) => (
         <div key={item.id}>
-          {item ? (
-            <TodoGroup groupName={item.value} list={item.list} />
-          ) : typeof item.value === "undefined" ? (
+          {item.value ? (
+            <TodoGroup
+              groupName={item.value}
+              list={item.list}
+              onAddTodoItem={() =>
+                setList((prevList) => {
+                  const newGroup = {
+                    ...prevList[i],
+                    list: [
+                      ...prevList[i].list,
+                      {
+                        id: `${prevList[i].id}-${prevList[i].list.length + 1}`,
+                        value: `group-todo-${prevList[i].list.length + 1}`,
+                        isDone: false,
+                      },
+                    ],
+                  }
+
+                  return [
+                    ...prevList.slice(0, i),
+                    newGroup,
+                    ...prevList.slice(i + 1),
+                  ]
+                })
+              }
+              onEditTodoItem={() => setList((prevList) => prevList)}
+            />
+          ) : (
             <ul>
               {item.list.map((todo) => (
                 <Todo
@@ -105,7 +133,7 @@ function TodoList() {
                 />
               ))}
             </ul>
-          ) : null}
+          )}
         </div>
       ))}
 
@@ -115,8 +143,14 @@ function TodoList() {
   )
 }
 
-function TodoGroup(props: { groupName: string; list: Todo[] }) {
-  const { groupName, list } = props
+function TodoGroup(props: {
+  groupName: string
+  list: Pick<Todo, "id" | "value" | "isDone">[]
+  onAddTodoItem?: () => void
+  onEditTodoItem?: () => void
+}) {
+  const { groupName, list, onAddTodoItem } = props
+
   return (
     <>
       <h2>{groupName}</h2>
@@ -130,11 +164,12 @@ function TodoGroup(props: { groupName: string; list: Todo[] }) {
           />
         ))}
       </ul>
+      <button onClick={onAddTodoItem}>新增 Todo</button>
     </>
   )
 }
 
-function Todo(props: Todo) {
+function Todo(props: Pick<Todo, "id" | "value" | "isDone">) {
   const { value, isDone } = props
   return (
     <li>
@@ -152,3 +187,5 @@ function Todo(props: Todo) {
 }
 
 export default TodoList
+
+// 順便了解一下 key 用 index 會有什麼問題？
