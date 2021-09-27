@@ -1,20 +1,11 @@
 import React, { useState } from "react"
 
-type Todo = {
-  // 這裡的 type 定義可以再優化嗎
-  id: string
-  value: string
-  isDone: boolean
-  list: Pick<Todo, "id" | "value" | "isDone">[]
-}
-let id = 10
-
 const initialList = [
   {
     id: "1",
     value: "",
     isDone: false,
-    list: [{ id: "a", value: "todo-01", isDone: false }],
+    list: [{ id: "1-1", value: "1-1", isDone: false }],
   },
   {
     id: "2",
@@ -33,38 +24,31 @@ const initialList = [
       },
     ],
   },
-  {
-    id: "3",
-    value: "第二個群組",
-    isDone: false,
-    list: [
-      {
-        id: "a",
-        value: "group-todo-01",
-        isDone: false,
-      },
-      {
-        id: "b",
-        value: "group-todo-02",
-        isDone: false,
-      },
-    ],
-  },
 ]
+
+type Todo = {
+  id: string
+  value: string
+  isDone: boolean
+  list: Pick<Todo, "id" | "value" | "isDone">[]
+}
+let id = 1
+
 function TodoList() {
   const [list, setList] = useState<Todo[]>([])
 
   const handleGroupAdd = () => {
+    const no = id++
     setList((prevList) => [
       ...prevList,
       {
-        id: `${id}`,
-        value: `第 ${id} 個群組`,
+        id: `${no}`,
+        value: `第 ${no} 個群組`,
         isDone: false,
         list: [
           {
-            id: `${id}-1`,
-            value: "group-todo-01",
+            id: `${no}-1`,
+            value: `${no}-1`,
             isDone: false,
           },
         ],
@@ -72,16 +56,17 @@ function TodoList() {
     ])
   }
   const handleAdd = () => {
+    const no = id++
     setList((prevList) => [
       ...prevList,
       {
-        id: `${id}`,
-        value: "",
+        id: `${no}`,
+        value: ``,
         isDone: false,
         list: [
           {
-            id: `${id}-1`,
-            value: "group-todo-01",
+            id: `${no}-1`,
+            value: `${no}-1`,
             isDone: false,
           },
         ],
@@ -97,6 +82,7 @@ function TodoList() {
             <TodoGroup
               groupName={item.value}
               list={item.list}
+              isDone={item.isDone}
               onChange={(value) => {
                 setList((prevList) => [
                   ...prevList.slice(0, i),
@@ -107,24 +93,42 @@ function TodoList() {
                   ...prevList.slice(i + 1),
                 ])
               }}
+              onCheck={() => {
+                setList((prevList) => [
+                  ...prevList.slice(0, i),
+                  {
+                    ...prevList[i],
+                    isDone: !prevList[i].isDone,
+                    list: prevList[i].list.map((todo) => ({
+                      ...todo,
+                      isDone: !prevList[i].isDone,
+                    })),
+                  },
+                  ...prevList.slice(i + 1),
+                ])
+              }}
               onRemove={() =>
                 setList((prevList) => [
                   ...prevList.slice(0, i),
                   ...prevList.slice(i + 1),
                 ])
               }
-              onTodoAdd={() =>
+              onTodoAdd={() => {
+                const no = id++
                 setList((prevList) => {
+                  const newList = [
+                    ...prevList[i].list,
+                    {
+                      id: `${prevList[i].id}-${no}`,
+                      value: `${prevList[i].id}-${no}`,
+                      isDone: false,
+                    },
+                  ]
+
                   const newGroup = {
                     ...prevList[i],
-                    list: [
-                      ...prevList[i].list,
-                      {
-                        id: `${prevList[i].id}-${prevList[i].list.length + 1}`,
-                        value: `group-todo-${prevList[i].list.length + 1}`,
-                        isDone: false,
-                      },
-                    ],
+                    isDone: false,
+                    list: newList,
                   }
 
                   return [
@@ -133,7 +137,7 @@ function TodoList() {
                     ...prevList.slice(i + 1),
                   ]
                 })
-              }
+              }}
               onTodoChange={(targetTodoId, newValue) =>
                 setList((prevList) => {
                   return [
@@ -151,15 +155,30 @@ function TodoList() {
               }
               onTodoCheck={(targetTodoId) =>
                 setList((prevList) => {
+                  const newTodoList = prevList[i].list.map((todo) => ({
+                    ...todo,
+                    isDone:
+                      todo.id === targetTodoId ? !todo.isDone : todo.isDone,
+                  }))
+
+                  if (checkListDone(newTodoList)) {
+                    return [
+                      ...prevList.slice(0, i),
+                      {
+                        ...prevList[i],
+                        isDone: true,
+                        list: newTodoList,
+                      },
+                      ...prevList.slice(i + 1),
+                    ]
+                  }
+
                   return [
                     ...prevList.slice(0, i),
                     {
                       ...prevList[i],
-                      list: prevList[i].list.map((todo) => ({
-                        ...todo,
-                        isDone:
-                          todo.id === targetTodoId ? !todo.isDone : todo.isDone,
-                      })),
+                      isDone: false,
+                      list: newTodoList,
                     },
                     ...prevList.slice(i + 1),
                   ]
@@ -179,7 +198,7 @@ function TodoList() {
               }
             />
           ) : (
-            <ul>
+            <div>
               {item.list.map((todo) => (
                 <Todo
                   key={todo.id}
@@ -207,6 +226,7 @@ function TodoList() {
                       ...prevList.slice(0, i),
                       {
                         ...prevList[i],
+                        isDone: !prevList[i].isDone,
                         list: prevList[i].list.map((currentTodo) => ({
                           ...currentTodo,
                           isDone:
@@ -232,7 +252,7 @@ function TodoList() {
                   }}
                 />
               ))}
-            </ul>
+            </div>
           )}
           <hr />
         </div>
@@ -244,10 +264,18 @@ function TodoList() {
   )
 }
 
+const checkListDone: (
+  list: Pick<Todo, "id" | "value" | "isDone">[]
+) => boolean = (list) => {
+  return list.length === list.filter((todo) => todo.isDone).length
+}
+
 function TodoGroup(props: {
   groupName: string
+  isDone: boolean
   list: Pick<Todo, "id" | "value" | "isDone">[]
   onChange?: (value: string) => void
+  onCheck?: () => void
   onRemove?: () => void
   onTodoAdd?: () => void
   onTodoChange?: (todoId: string, value: string) => void
@@ -256,8 +284,10 @@ function TodoGroup(props: {
 }) {
   const {
     groupName,
+    isDone,
     list,
     onChange,
+    onCheck,
     onRemove,
     onTodoChange,
     onTodoCheck,
@@ -266,9 +296,10 @@ function TodoGroup(props: {
   } = props
 
   return (
-    <>
+    <div>
       <h2>
         <input value={groupName} onChange={(e) => onChange?.(e.target.value)} />
+        <input type="checkbox" checked={isDone} onChange={onCheck} />
         <button onClick={onRemove}>刪除群組</button>
       </h2>
       <ul>
@@ -285,7 +316,7 @@ function TodoGroup(props: {
         ))}
       </ul>
       <button onClick={onTodoAdd}>新增 Todo</button>
-    </>
+    </div>
   )
 }
 
@@ -298,7 +329,7 @@ function Todo(
 ) {
   const { value, isDone, onChange, onCheck, onRemove } = props
   return (
-    <li>
+    <div>
       <input
         type="text"
         value={value}
@@ -306,7 +337,7 @@ function Todo(
       />
       <input type="checkbox" checked={isDone} onChange={onCheck} />
       <button onClick={onRemove}>delete</button>
-    </li>
+    </div>
   )
 }
 
@@ -316,3 +347,4 @@ export default TodoList
 
 // 重新 review 一次優化
 // 用 react-hook-form 做一次
+// 加上 filter 同時還可以順利的新增 todo
