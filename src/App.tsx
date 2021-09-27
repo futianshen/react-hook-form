@@ -6,6 +6,7 @@ import FormUnControlledWithoutReactHookForm from "./FormUnControlledWithoutReact
 import PracticeUnControlled from "./PracticeUnControlled"
 import PracticeControlled from "./PracticeControlled"
 import TodoList from "./TodoList"
+import TodoListV2 from "./TodoListV2"
 
 function App() {
   return (
@@ -28,7 +29,8 @@ function App() {
       <PracticeUnControlled />
       <h2>PracticeControlled</h2>
       <PracticeControlled /> */}
-      <TodoList />
+      {/* <TodoList /> */}
+      <TodoListV2 />
     </div>
   )
 }
