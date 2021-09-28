@@ -1,8 +1,9 @@
-import React from "react"
+import React, { ReactElement, useEffect } from "react"
 import {
   Control,
   useFieldArray,
   useForm,
+  UseFormGetValues,
   UseFormRegister,
   UseFormSetValue,
   useWatch,
@@ -45,23 +46,29 @@ type FormValues = {
 }
 
 function TodoListForm() {
-  const { control, register, setValue } = useForm<FormValues>({
+  const { control, register, setValue, getValues } = useForm<FormValues>({
     defaultValues: {
       nestedList: [],
     },
   })
 
   return (
-    <TodoList control={control} onRegister={register} onValueSet={setValue} />
+    <TodoList
+      control={control}
+      onRegister={register}
+      onValuesGet={getValues}
+      onValueSet={setValue}
+    />
   )
 }
 
 function TodoList(props: {
   control: Control<FormValues>
   onRegister: UseFormRegister<FormValues>
+  onValuesGet: UseFormGetValues<FormValues>
   onValueSet: UseFormSetValue<FormValues>
 }) {
-  const { control, onRegister, onValueSet } = props
+  const { control, onRegister, onValueSet, onValuesGet } = props
   const { fields, append, remove } = useFieldArray({
     name: "nestedList",
     control,
@@ -89,25 +96,73 @@ function TodoList(props: {
 
       <ol>
         {fields.map((field, index) => (
-          <li key={field.id}>
-            <input {...onRegister(`nestedList.${index}.value`)} type="text" />
-            <input
-              type="checkbox"
-              {...onRegister(`nestedList.${index}.isDone`)}
-            />
-            <button onClick={() => remove(index)}>Delete</button>
+          <Todo
+            key={field.id}
+            parentIndex={index}
+            isGroup={field.isGroup}
+            control={control}
+            onRemove={() => remove(index)}
+            onValuesGet={onValuesGet}
+            onRegister={onRegister}
+            onValueSet={onValueSet}
+          >
             <SubTodoList
               control={control}
               parentIndex={index}
               isGroup={field.isGroup}
               onRegister={onRegister}
+              onValuesGet={onValuesGet}
               onValueSet={onValueSet}
             />
-            <hr />
-          </li>
+          </Todo>
         ))}
       </ol>
     </>
+  )
+}
+
+function Todo(props: {
+  parentIndex: number
+  isGroup: boolean
+  control: Control<FormValues>
+  onRemove: () => void
+  onRegister: UseFormRegister<FormValues>
+  onValuesGet: UseFormGetValues<FormValues>
+  onValueSet: UseFormSetValue<FormValues>
+  children?: ReactElement
+}) {
+  const {
+    parentIndex,
+    control,
+    onRegister,
+    onValueSet,
+    onValuesGet,
+    onRemove,
+    children,
+  } = props
+  const list = useWatch({
+    control,
+    name: `nestedList.${parentIndex}.list`,
+  })
+
+  return (
+    <li>
+      <input {...onRegister(`nestedList.${parentIndex}.value`)} type="text" />
+      <input
+        type="checkbox"
+        {...onRegister(`nestedList.${parentIndex}.isDone`)}
+        onChange={(e) => {
+          const nextValue = !onValuesGet(`nestedList.${parentIndex}.isDone`)
+          onValueSet(`nestedList.${parentIndex}.isDone`, nextValue)
+          list.forEach((_, i) => {
+            onValueSet(`nestedList.${parentIndex}.list.${i}.isDone`, nextValue)
+          })
+        }}
+      />
+      <button onClick={onRemove}>Delete</button>
+      {children}
+      <hr />
+    </li>
   )
 }
 
@@ -116,13 +171,11 @@ function SubTodoList(props: {
   parentIndex: number
   isGroup: boolean
   onRegister: UseFormRegister<FormValues>
+  onValuesGet: UseFormGetValues<FormValues>
   onValueSet: UseFormSetValue<FormValues>
 }) {
-  const { control, parentIndex, isGroup, onRegister, onValueSet } = props
-  const isGroupDone = useWatch({
-    control,
-    name: `nestedList.${parentIndex}`,
-  }).isDone
+  const { control, parentIndex, isGroup, onRegister, onValuesGet, onValueSet } =
+    props
   const { fields, append, remove } = useFieldArray({
     name: `nestedList.${parentIndex}.list`,
     control,
@@ -131,26 +184,56 @@ function SubTodoList(props: {
   return (
     <>
       {isGroup && (
-        <button onClick={() => append({ value: "todo", isDone: false })}>
+        <button
+          onClick={() => {
+            onValueSet(`nestedList.${parentIndex}.isDone`, false)
+            append({ value: "todo", isDone: false })
+          }}
+        >
           Add Todo
         </button>
       )}
       <ol>
         {fields.map((field, index) => (
-          <li key={field.id}>
-            <input
-              {...onRegister(`nestedList.${parentIndex}.list.${index}.value`)}
-              type="text"
-            />
-            <input
-              type="checkbox"
-              {...onRegister(`nestedList.${parentIndex}.list.${index}.isDone`)}
-            />
-            <button onClick={() => remove(index)}>Delete</button>
-          </li>
+          <SubTodo
+            key={field.id}
+            parentIndex={parentIndex}
+            index={index}
+            onRemove={() => remove(index)}
+            onRegister={onRegister}
+            onValuesGet={onValuesGet}
+            onValueSet={onValueSet}
+          />
         ))}
       </ol>
     </>
+  )
+}
+
+function SubTodo(props: {
+  parentIndex: number
+  index: number
+  onRemove: () => void
+  onRegister: UseFormRegister<FormValues>
+  onValuesGet: UseFormGetValues<FormValues>
+  onValueSet: UseFormSetValue<FormValues>
+}) {
+  const { parentIndex, index, onRemove, onRegister, onValuesGet, onValueSet } =
+    props
+
+  return (
+    <li>
+      <input
+        {...onRegister(`nestedList.${parentIndex}.list.${index}.value`)}
+        type="text"
+      />
+      <input
+        type="checkbox"
+        {...onRegister(`nestedList.${parentIndex}.list.${index}.isDone`)}
+        onChange={() => {}}
+      />
+      <button onClick={onRemove}>Delete</button>
+    </li>
   )
 }
 
