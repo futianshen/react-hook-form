@@ -248,6 +248,5 @@ function Todo(
 export default TodoListV2
 // 比較 TodoListV2 和 TodoList 的思路有什麼不同？
 // 我想思路不同的原因可能在於，我的邏輯會被別人帶跑
-
 // 有沒有辦法做 3 層甚至 4 層 5 層的 Todo Lists
 // 這個作法還能不能再簡化

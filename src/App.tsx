@@ -7,6 +7,7 @@ import PracticeUnControlled from "./PracticeUnControlled"
 import PracticeControlled from "./PracticeControlled"
 import TodoList from "./TodoList"
 import TodoListV2 from "./TodoListV2"
+import TodoListForm from "./TodoListForm"
 
 function App() {
   return (
@@ -30,7 +31,8 @@ function App() {
       <h2>PracticeControlled</h2>
       <PracticeControlled /> */}
       {/* <TodoList /> */}
-      <TodoListV2 />
+      {/* <TodoListV2 /> */}
+      <TodoListForm />
     </div>
   )
 }
