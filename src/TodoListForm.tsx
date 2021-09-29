@@ -25,7 +25,7 @@ type FormValues = {
   }[]
 }
 
-const initialList = [
+const initialList: FormValues["nestedList"] = [
   {
     value: "todo 1",
     isDone: false,
