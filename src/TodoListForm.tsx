@@ -1,39 +1,18 @@
-import React, { ReactElement } from "react"
+import React from "react"
 import {
-  Control,
-  FormProvider,
-  useFieldArray,
   useForm,
+  useFieldArray,
+  FormProvider,
   useFormContext,
-  UseFormGetValues,
-  UseFormRegister,
-  UseFormSetValue
 } from "react-hook-form"
 
-const initialList = [
-  {
-    value: "todo",
-    isDone: false,
-    isGroup: false,
-    list: [],
-  },
-  {
-    value: "todo-group",
-    isDone: false,
-    isGroup: true,
-    list: [
-      {
-        value: "group-todo-01",
-        isDone: false,
-      },
-      {
-        value: "group-todo-02",
-        isDone: false,
-      },
-    ],
-  },
-]
-
+import { ReactElement } from "react"
+import {
+  Control,
+  UseFormGetValues,
+  UseFormRegister,
+  UseFormSetValue,
+} from "react-hook-form"
 type FormValues = {
   nestedList: {
     isGroup: boolean
@@ -46,28 +25,69 @@ type FormValues = {
   }[]
 }
 
+const initialList = [
+  {
+    value: "todo 1",
+    isDone: false,
+    isGroup: false,
+    list: [],
+  },
+  {
+    value: "todo group 1",
+    isDone: false,
+    isGroup: true,
+    list: [
+      {
+        value: "group todo 1",
+        isDone: false,
+      },
+      {
+        value: "group todo 2",
+        isDone: true,
+      },
+    ],
+  },
+]
+
 function TodoList() {
   const form = useForm<FormValues>({
     defaultValues: {
-      nestedList: [],
+      nestedList: initialList,
     },
   })
-  const { control, getValues, register, setValue } = form
   const name = "nestedList"
-  const { fields, append, remove } = useFieldArray({ name, control })
+  const { control, getValues, register, setValue, handleSubmit } = form
+  const { fields, prepend, remove } = useFieldArray({ name, control })
+
+  const save = handleSubmit((value) => {
+    localStorage.setItem("todoList", JSON.stringify(value.nestedList))
+    alert("success")
+  })
 
   return (
     <>
+      <button onClick={save}>Save</button>
       <button
         onClick={() => {
-          append({ value: "todo", isDone: false, isGroup: false })
+          setValue(
+            "nestedList",
+            JSON.parse(localStorage.getItem("todoList") || "")
+          )
+          alert("success")
+        }}
+      >
+        Load
+      </button>
+      <button
+        onClick={() => {
+          prepend({ value: "todo", isDone: false, isGroup: false })
         }}
       >
         Add Todo
       </button>
       <button
         onClick={() =>
-          append({
+          prepend({
             value: "todoGroup",
             isDone: false,
             isGroup: true,
@@ -77,51 +97,45 @@ function TodoList() {
       >
         Add Group
       </button>
-      <FormProvider {...form}>
-        <ol>
+
+      <ol>
+        <FormProvider {...form}>
           {fields.map((field, index) => (
             <Todo
               key={field.id}
               name={`${name}.${index}`}
-              control={control}
-              onRemove={() => remove(index)}
-              onChange={() => {}}
-              onValuesGet={getValues}
               onRegister={register}
+              onValuesGet={getValues}
               onValueSet={setValue}
+              onRemove={() => remove(index)}
             >
               <SubTodoList
                 control={control}
                 name={`${name}.${index}`}
                 isGroup={field.isGroup}
-                onRegister={register}
-                onValuesGet={getValues}
                 onValueSet={setValue}
               />
             </Todo>
           ))}
-        </ol>
-      </FormProvider>
+        </FormProvider>
+      </ol>
     </>
   )
 }
 
 function Todo(props: {
   name: `nestedList.${number}`
-  control: Control<FormValues>
-  onRemove: () => void
-  onChange: (value: string) => void
   onRegister: UseFormRegister<FormValues>
   onValuesGet: UseFormGetValues<FormValues>
   onValueSet: UseFormSetValue<FormValues>
+  onRemove: () => void
   children?: ReactElement
 }) {
-  const { name, onRegister, onRemove, onValuesGet, onValueSet, children } =
+  const { name, onRegister, onValuesGet, onValueSet, onRemove, children } =
     props
 
   return (
     <li>
-      <input {...onRegister(`${name}.value`)} type="text" />
       <input
         type="checkbox"
         {...onRegister(`${name}.isDone`)}
@@ -134,6 +148,7 @@ function Todo(props: {
           })
         }}
       />
+      <input {...onRegister(`${name}.value`)} type="text" />
       <button onClick={onRemove}>Delete</button>
       {children}
       <hr />
@@ -142,14 +157,12 @@ function Todo(props: {
 }
 
 function SubTodoList(props: {
-  control: Control<FormValues>
   name: `nestedList.${number}`
+  control: Control<FormValues>
   isGroup: boolean
-  onRegister: UseFormRegister<FormValues>
-  onValuesGet: UseFormGetValues<FormValues>
   onValueSet: UseFormSetValue<FormValues>
 }) {
-  const { control, name, isGroup, onRegister, onValuesGet, onValueSet } = props
+  const { name, control, isGroup, onValueSet } = props
   const { fields, append, remove } = useFieldArray({
     name: `${name}.list`,
     control,
@@ -174,8 +187,6 @@ function SubTodoList(props: {
             parentName={name}
             name={`${name}.list.${index}`}
             onRemove={() => remove(index)}
-            onRegister={onRegister}
-            onValueSet={onValueSet}
           />
         ))}
       </ol>
@@ -187,28 +198,26 @@ function SubTodo(props: {
   parentName: `nestedList.${number}`
   name: `nestedList.${number}.list.${number}`
   onRemove: () => void
-  onRegister: UseFormRegister<FormValues>
-  onValueSet: UseFormSetValue<FormValues>
 }) {
-  const { getValues, setValue } = useFormContext<FormValues>()
-  const { parentName, name, onRemove, onRegister, onValueSet } = props
+  const { parentName, name, onRemove } = props
+  const { register, getValues, setValue } = useFormContext<FormValues>()
 
   return (
     <li>
-      <input {...onRegister(`${name}.value`)} type="text" />
       <input
         type="checkbox"
-        {...onRegister(`${name}.isDone`)}
+        {...register(`${name}.isDone`)}
         onChange={(e) => {
-          const { onChange } = onRegister(`${name}.isDone`)
+          const { onChange } = register(`${name}.isDone`)
           onChange(e)
           const siblings = getValues(`${parentName}.list`)
           if (siblings.every((todo) => todo.isDone)) {
             return setValue(`${parentName}.isDone`, true)
           }
-          onValueSet(`${parentName}.isDone`, false)
+          setValue(`${parentName}.isDone`, false)
         }}
       />
+      <input {...register(`${name}.value`)} type="text" />
       <button onClick={onRemove}>Delete</button>
     </li>
   )
